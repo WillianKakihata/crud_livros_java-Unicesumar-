@@ -28,8 +28,8 @@ public class LivrariaService {
     public void update(Livraria livraria, Long id) {
         Livraria livros = livrariaRepository.findById(id).orElse(null);
         if (livros != null) {
-            livros.setNome(livros.getNome());
-            livros.setAutor(livros.getAutor());
+            livros.setNome(livraria.getNome());
+            livros.setAutor(livraria.getAutor());
             livrariaRepository.save(livros);
         }
     }
