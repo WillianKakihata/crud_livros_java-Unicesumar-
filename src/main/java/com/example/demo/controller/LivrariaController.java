@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Livraria;
+import com.example.demo.model.StatusLivros;
 import com.example.demo.service.LivrariaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -40,4 +41,26 @@ public class LivrariaController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping(value = "/status/{id}")
+    public Livraria findStatusLivros(StatusLivros status) {
+        return service.findStatus(status);
+    }
+
+    @PutMapping(value = "/status/reserva/{id}")
+    public ResponseEntity<String> reservarLivro(@RequestBody Livraria livros, @PathVariable Long id) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("custom-header", "header Customizavel");
+        service.reservarLivro(livros, id);
+        return ResponseEntity.ok("Reservado com sucesso!");
+    }
+
+    @PutMapping(value = "/status/emprestimo/{id}")
+    public ResponseEntity<String> emprestarLivro(@RequestBody Livraria livros, @PathVariable Long id) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("custom-header", "header Customizavel");
+        service.reservarLivro(livros, id);
+        return ResponseEntity.ok("Emprestado com sucesso!");
+    }
+
 }

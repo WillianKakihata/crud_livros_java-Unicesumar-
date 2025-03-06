@@ -18,6 +18,9 @@ public class Livraria {
     private String nome;
     private String autor;
 
+    @Enumerated(EnumType.STRING)
+    private StatusLivros status;
+
     public String getNome() {
         return nome;
     }
@@ -32,6 +35,14 @@ public class Livraria {
 
     public void setAutor(String autor) {
         this.autor = autor;
+    }
+
+    public StatusLivros getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusLivros status) {
+        this.status = status;
     }
 }
 
