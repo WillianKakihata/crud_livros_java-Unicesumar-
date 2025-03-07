@@ -6,7 +6,6 @@ import com.example.demo.service.LivrariaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,43 +23,57 @@ public class LivrariaController {
     }
 
     @PostMapping()
-    public Livraria createLivros(@RequestBody Livraria livros) {
-        return service.create(livros);
+    public ResponseEntity<Livraria> createLivros(@RequestBody Livraria livros) {
+        Livraria livro =  service.create(livros);
+        return new ResponseEntity<>(livro,HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<String> updatelivro(@RequestBody Livraria livros, @PathVariable Long id) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("custom-header", "header Customizavel");
-        service.update(livros, id);
-        return ResponseEntity.ok("Alterado com sucesso!");
+        httpHeaders.add("atualizar o livro", "Valor do livro encontrado");
+        Livraria livro1 = service.update(livros, id);
+        if (livro1 != null) {
+            return new ResponseEntity<>("Alterado Com Sucesso", HttpStatus.ACCEPTED);
+        }else
+            return new ResponseEntity<>("Falha na alteracao", HttpStatus.BAD_REQUEST);
+
     }
 
     @DeleteMapping(value = "{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         service.delete(id);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>("Deletado com sucesso", HttpStatus.ACCEPTED);
     }
 
-    @GetMapping(value = "/status/{id}")
-    public Livraria findStatusLivros(StatusLivros status) {
-        return service.findStatus(status);
+    @GetMapping(value = "/status/{status}")
+    public List<Livraria> findStatusLivros(@PathVariable StatusLivros status) {
+        List<Livraria> livros = service.findStatus(status);
+        return livros;
     }
 
     @PutMapping(value = "/status/reserva/{id}")
     public ResponseEntity<String> reservarLivro(@RequestBody Livraria livros, @PathVariable Long id) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("custom-header", "header Customizavel");
-        service.reservarLivro(livros, id);
-        return ResponseEntity.ok("Reservado com sucesso!");
+        httpHeaders.add("Reserva de livro", "Valor do livro (RESERVADO)");
+        Livraria livro = service.reservarLivro(livros, id);
+        if (livro != null) {
+            return new ResponseEntity<>("Reservado com sucesso!", HttpStatus.ACCEPTED);
+        }else
+            return new ResponseEntity<>("Falha na reserva", HttpStatus.BAD_REQUEST);
+
     }
 
     @PutMapping(value = "/status/emprestimo/{id}")
     public ResponseEntity<String> emprestarLivro(@RequestBody Livraria livros, @PathVariable Long id) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("custom-header", "header Customizavel");
-        service.reservarLivro(livros, id);
-        return ResponseEntity.ok("Emprestado com sucesso!");
+        httpHeaders.add("Emprestimo de livro", "Valor do livro (EMPRESTADO)");
+        Livraria livro = service.emprestimoLivro(livros, id);
+        if (livro != null) {
+            return new ResponseEntity<>("Emprestimo com sucesso!", HttpStatus.ACCEPTED);
+        } else {
+            return new ResponseEntity<>("Falha no emprestimo!", HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

@@ -26,45 +26,44 @@ public class LivrariaService {
         livrariaRepository.deleteById(id);
     }
 
-    public Livraria findStatus(StatusLivros status) {
-        Livraria livros = livrariaRepository.findByStatus(status);
-        return livros;
+    public List<Livraria> findStatus(StatusLivros status) {
+        return livrariaRepository.findByStatus(status);
     }
 
-    public void update(Livraria livraria, Long id) {
+    public Livraria update(Livraria livraria, Long id) {
         Livraria livros = livrariaRepository.findById(id).orElse(null);
         if (livros != null) {
             livros.setNome(livraria.getNome());
             livros.setAutor(livraria.getAutor());
             livros.setStatus(livraria.getStatus());
-            livrariaRepository.save(livros);
+            return livrariaRepository.save(livros);
         }
+        return livros;
     }
 
-    public void emprestimoLivro(Livraria livraria, Long id) {
+    public Livraria emprestimoLivro(Livraria livraria, Long id) {
         Livraria livros = livrariaRepository.findById(id).orElse(null);
         if (livros != null) {
             if (livros.getStatus() == StatusLivros.DISPONIVEL) {
-                livros.setNome(livraria.getNome());
-                livros.setAutor(livraria.getAutor());
                 livros.setStatus(StatusLivros.EM_EMPRESTIMO);
-                livrariaRepository.save(livros);
-            }
+                return livrariaRepository.save(livros);
+            }else
+                return null;
         }
-
+        return livros;
 
     }
 
-    public void reservarLivro(Livraria livraria, Long id) {
+    public Livraria reservarLivro(Livraria livraria, Long id) {
         Livraria livros = livrariaRepository.findById(id).orElse(null);
         if (livros != null) {
             if (livros.getStatus() == StatusLivros.DISPONIVEL) {
-                livros.setNome(livraria.getNome());
-                livros.setAutor(livraria.getAutor());
                 livros.setStatus(StatusLivros.RESERVADO);
-                livrariaRepository.save(livros);
-            }
+                return livrariaRepository.save(livros);
+            }else
+                return null;
         }
+        return livros;
 
 
     }

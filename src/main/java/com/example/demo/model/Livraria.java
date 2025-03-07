@@ -10,15 +10,19 @@ import lombok.NoArgsConstructor;
 @Table(name = "livros")
 
 public class Livraria {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private Long id;
 
-    @Column
+    @Column(name = "NOME")
     private String nome;
+    @Column(name = "AUTOR")
     private String autor;
 
-    @Enumerated(EnumType.STRING)
+    @Column(name = "STATUS")
+    @Enumerated(EnumType.ORDINAL)
     private StatusLivros status;
 
     public String getNome() {
