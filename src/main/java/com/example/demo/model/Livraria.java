@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = "livros")
 
 public class Livraria {
@@ -46,6 +47,13 @@ public class Livraria {
     }
 
     public void setStatus(StatusLivros status) {
+        this.status = status;
+    }
+
+    public Livraria(Long id, String nome, String autor, StatusLivros status) {
+        this.id = id;
+        this.nome = nome;
+        this.autor = autor;
         this.status = status;
     }
 }

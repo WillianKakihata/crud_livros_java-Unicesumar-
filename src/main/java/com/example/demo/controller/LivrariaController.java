@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.LivroDTO;
 import com.example.demo.model.Livraria;
 import com.example.demo.model.StatusLivros;
 import com.example.demo.service.LivrariaService;
@@ -23,16 +24,16 @@ public class LivrariaController {
     }
 
     @PostMapping()
-    public ResponseEntity<Livraria> createLivros(@RequestBody Livraria livros) {
-        Livraria livro =  service.create(livros);
+    public ResponseEntity<Livraria> createLivros(@RequestBody LivroDTO dto) {
+        Livraria livro =  service.create(dto.transformarParaObjeto());
         return new ResponseEntity<>(livro,HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<String> updatelivro(@RequestBody Livraria livros, @PathVariable Long id) {
+    public ResponseEntity<String> updatelivro(@RequestBody LivroDTO dto, @PathVariable Long id) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("atualizar o livro", "Valor do livro encontrado");
-        Livraria livro1 = service.update(livros, id);
+        Livraria livro1 = service.update(dto.transformarParaObjeto(), id);
         if (livro1 != null) {
             return new ResponseEntity<>("Alterado Com Sucesso", HttpStatus.ACCEPTED);
         }else
@@ -53,10 +54,10 @@ public class LivrariaController {
     }
 
     @PutMapping(value = "/status/reserva/{id}")
-    public ResponseEntity<String> reservarLivro(@RequestBody Livraria livros, @PathVariable Long id) {
+    public ResponseEntity<String> reservarLivro(@RequestBody LivroDTO dto, @PathVariable Long id) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Reserva de livro", "Valor do livro (RESERVADO)");
-        Livraria livro = service.reservarLivro(livros, id);
+        Livraria livro = service.reservarLivro(dto.transformarParaObjeto(), id);
         if (livro != null) {
             return new ResponseEntity<>("Reservado com sucesso!", HttpStatus.ACCEPTED);
         }else
@@ -65,10 +66,10 @@ public class LivrariaController {
     }
 
     @PutMapping(value = "/status/emprestimo/{id}")
-    public ResponseEntity<String> emprestarLivro(@RequestBody Livraria livros, @PathVariable Long id) {
+    public ResponseEntity<String> emprestarLivro(@RequestBody LivroDTO dto, @PathVariable Long id) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Emprestimo de livro", "Valor do livro (EMPRESTADO)");
-        Livraria livro = service.emprestimoLivro(livros, id);
+        Livraria livro = service.emprestimoLivro(dto.transformarParaObjeto(), id);
         if (livro != null) {
             return new ResponseEntity<>("Emprestimo com sucesso!", HttpStatus.ACCEPTED);
         } else {
