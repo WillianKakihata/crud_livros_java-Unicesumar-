@@ -1,25 +1,35 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.LivroDTO;
 import com.example.demo.model.Livraria;
 import com.example.demo.model.StatusLivros;
 import com.example.demo.repository.LivrariaRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 @Service
 public class LivrariaService {
 
     @Autowired
-    LivrariaRepository livrariaRepository;
+    private LivrariaRepository livrariaRepository;
 
-    public Livraria create(Livraria livraria) {
-        return livrariaRepository.save(livraria);
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public LivroDTO create(Livraria livraria) {
+        Livraria livros = this.livrariaRepository.save(livraria);
+        return modelMapper.map(livros, LivroDTO.class);
     }
 
-    public List<Livraria> findall() {
-        return livrariaRepository.findAll();
+    public List<LivroDTO> findall() {
+        List<Livraria> livros = this.livrariaRepository.findAll();
+        return modelMapper.map(livros, new TypeToken<List<LivroDTO>>(){}.getType());
     }
 
     public void delete(Long id) {
@@ -30,15 +40,26 @@ public class LivrariaService {
         return livrariaRepository.findByStatus(status);
     }
 
-    public Livraria update(Livraria livraria, Long id) {
-        Livraria livros = livrariaRepository.findById(id).orElse(null);
-        if (livros != null) {
+    public Livraria getLivros(Long id) {
+        Livraria livros = livrariaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(("Livro nao encontrado")));
+        return livros;
+    }
+    public Livraria update(Livraria novosDados, Long id) {
+        Livraria livroExistente = getLivros(id);
+        if (livroExistente == null) {
+            return null;
+        }
+
+        modelMapper.map(novosDados, livroExistente);
+        return livrariaRepository.save(livroExistente);
+        /*if (livros != null) {
             livros.setNome(livraria.getNome());
             livros.setAutor(livraria.getAutor());
             livros.setStatus(livraria.getStatus());
             return livrariaRepository.save(livros);
         }
-        return livros;
+        */
+
     }
 
     public Livraria emprestimoLivro(Livraria livraria, Long id) {

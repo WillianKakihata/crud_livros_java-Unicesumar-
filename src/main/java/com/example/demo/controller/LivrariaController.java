@@ -4,6 +4,7 @@ import com.example.demo.dto.LivroDTO;
 import com.example.demo.model.Livraria;
 import com.example.demo.model.StatusLivros;
 import com.example.demo.service.LivrariaService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,26 +19,33 @@ public class LivrariaController {
     @Autowired
     LivrariaService service;
 
+    @Autowired
+    ModelMapper modelMapper;
     @GetMapping()
-    public List<Livraria> findAll(){
+    public List<LivroDTO> findAll(){
         return service.findall();
     }
 
     @PostMapping()
-    public ResponseEntity<Livraria> createLivros(@RequestBody LivroDTO dto) {
-        Livraria livro =  service.create(dto.transformarParaObjeto());
-        return new ResponseEntity<>(livro,HttpStatus.CREATED);
+    public ResponseEntity<LivroDTO> createLivros(@RequestBody LivroDTO livro) {
+        Livraria novaLivraria = modelMapper.map(livro, Livraria.class);
+        LivroDTO livros = service.create(novaLivraria);
+        return new ResponseEntity<>(livros,HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<String> updatelivro(@RequestBody LivroDTO dto, @PathVariable Long id) {
+    public ResponseEntity<LivroDTO> updatelivro(@RequestBody LivroDTO dto, @PathVariable Long id) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("atualizar o livro", "Valor do livro encontrado");
-        Livraria livro1 = service.update(dto.transformarParaObjeto(), id);
-        if (livro1 != null) {
-            return new ResponseEntity<>("Alterado Com Sucesso", HttpStatus.ACCEPTED);
-        }else
-            return new ResponseEntity<>("Falha na alteracao", HttpStatus.BAD_REQUEST);
+
+        Livraria novoLivro = modelMapper.map(dto, Livraria.class);
+        Livraria livroAtualizado = service.update(novoLivro, id);
+        if (livroAtualizado != null) {
+            LivroDTO resposta = modelMapper.map(livroAtualizado, LivroDTO.class);
+            return ResponseEntity.ok(resposta);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
 
     }
 
@@ -59,9 +67,9 @@ public class LivrariaController {
         httpHeaders.add("Reserva de livro", "Valor do livro (RESERVADO)");
         Livraria livro = service.reservarLivro(dto.transformarParaObjeto(), id);
         if (livro != null) {
-            return new ResponseEntity<>("Reservado com sucesso!", HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("reservado com sucesso,", HttpStatus.BAD_REQUEST);
         }else
-            return new ResponseEntity<>("Falha na reserva", HttpStatus.BAD_REQUEST);
+            return  new ResponseEntity<>("Falha na reserva", HttpStatus.BAD_REQUEST);
 
     }
 
